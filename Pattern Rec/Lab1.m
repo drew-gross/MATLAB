@@ -27,79 +27,35 @@ sigmaE = [10 -5; -5 20];
 E = repmat(muE, nE, 1) + randn(nE, 2)*sigmaE;
 
 fig = 0;
-% newfig;
-% scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-% plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
-% xlabel('X');
-% ylabel('Y');
-% title('Class A and B');
-% 
-% newfig;
-% scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-% plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
-% xlabel('X');
-% ylabel('Y');
-% title('Class C, D, and E');
-% 
-% newfig;
-% scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-% x = linspace(-20,30,NUM_POINTS);
-% y = linspace(-5,30,NUM_POINTS);
-% [X,Y] = meshgrid(x,y);
-% Z = zeros(length(x));
-% for i=1:length(x)
-%     for j=1:length(y)
-%         A_dist = sqrt((X(i,j)-muA(1))^2 + (Y(i,j)-muA(2))^2);
-%         B_dist = sqrt((X(i,j)-muB(1))^2 + (Y(i,j)-muB(2))^2);
-%         if A_dist < B_dist
-%             Z(i,j)=0;
-%         else
-%             Z(i,j)=1;
-%         end
-%     end
-% end
-% contour(X,Y,Z,1,'r');
-% 
-% newfig;
-% scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-% plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
-% x = linspace(-25,45, NUM_POINTS);
-% y = linspace(-80,80, NUM_POINTS);
-% [X,Y] = meshgrid(x,y);
-% Z = zeros(length(x));
-% for i=1:length(x)
-%     for j=1:length(y)
-%         C_dist = sqrt((X(i,j) - muC(1))^2 + (Y(i,j)-muC(2))^2);
-%         D_dist = sqrt((X(i,j) - muD(1))^2 + (Y(i,j)-muD(2))^2);
-%         E_dist = sqrt((X(i,j) - muE(1))^2 + (Y(i,j)-muE(2))^2);
-%         if C_dist < D_dist && C_dist < E_dist
-%             Z(i,j) = 0;
-%         elseif D_dist < E_dist
-%             Z(i,j) = 1;
-%         else
-%             Z(i,j) = 2;
-%         end
-%     end
-% end
-% contour(X,Y,Z,2,'r');
+newfig;
+scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
+xlabel('X');
+ylabel('Y');
+title('Class A and B');
 
 newfig;
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+xlabel('X');
+ylabel('Y');
+title('Class C, D, and E');
 
-[eig_vec_A, eig_val_A] = eig(sigmaA);
-[eig_vec_B, eig_val_B] = eig(sigmaA);
 
-muA_ged = sqrtm(eig_val_A) \ eig_vec_A * muA';
-muB_ged = sqrtm(eig_val_B) \ eig_vec_B * muB';
+%Classifiers Section (i.e. section 3)
 
+% MED for A and B
+newfig;
 scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
 x = linspace(-20,30,NUM_POINTS);
 y = linspace(-5,30,NUM_POINTS);
 [X,Y] = meshgrid(x,y);
 Z = zeros(length(x));
 for i=1:length(x)
     for j=1:length(y)
-        A_dist = sqrt((X(i,j)-muA_ged(1))^2 + (Y(i,j)-muA_ged(2))^2);
-        B_dist = sqrt((X(i,j)-muB_ged(1))^2 + (Y(i,j)-muB_ged(2))^2);
+        A_dist = sqrt((X(i,j)-muA(1))^2 + (Y(i,j)-muA(2))^2);
+        B_dist = sqrt((X(i,j)-muB(1))^2 + (Y(i,j)-muB(2))^2);
         if A_dist < B_dist
             Z(i,j)=0;
         else
@@ -108,3 +64,110 @@ for i=1:length(x)
     end
 end
 contour(X,Y,Z,1,'r');
+
+
+% MED for C, D, and E
+newfig;
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+x = linspace(-25,45, NUM_POINTS);
+y = linspace(-80,80, NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        C_dist = sqrt((X(i,j) - muC(1))^2 + (Y(i,j)-muC(2))^2);
+        D_dist = sqrt((X(i,j) - muD(1))^2 + (Y(i,j)-muD(2))^2);
+        E_dist = sqrt((X(i,j) - muE(1))^2 + (Y(i,j)-muE(2))^2);
+        if C_dist < D_dist && C_dist < E_dist
+            Z(i,j) = 0;
+        elseif D_dist < E_dist
+            Z(i,j) = 1;
+        else
+            Z(i,j) = 2;
+        end
+    end
+end
+contour(X,Y,Z,2,'r');
+
+%GED for A and B
+newfig;
+
+[eig_vec_A, eig_val_A] = eig(sigmaA);
+[eig_vec_B, eig_val_B] = eig(sigmaB);
+
+WA = (eig_val_A^(-1/2))*(eig_vec_A');
+WB = (eig_val_B^(-1/2))*(eig_vec_B');
+
+muA_ged = WA * muA';
+muB_ged = WB * muB';
+
+scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
+x = linspace(-20,30,NUM_POINTS);
+y = linspace(-5,30,NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        PAwhite = WA * P;
+        PBwhite = WB * P;
+        
+        A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
+        B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
+        
+        if A_dist < B_dist
+            Z(i,j)=0;
+        else
+            Z(i,j)=1;
+        end
+    end
+end
+contour(X,Y,Z,1,'r');
+
+
+%GED for C, D, and E
+newfig;
+
+[eig_vec_C, eig_val_C] = eig(sigmaC);
+[eig_vec_D, eig_val_D] = eig(sigmaD);
+[eig_vec_E, eig_val_E] = eig(sigmaE);
+
+WC = (eig_val_C^(-1/2))*(eig_vec_C');
+WD = (eig_val_D^(-1/2))*(eig_vec_D');
+WE = (eig_val_E^(-1/2))*(eig_vec_E');
+
+muC_ged = WC * muC';
+muD_ged = WD * muD';
+muE_ged = WE * muE';
+
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+
+x = linspace(-25,45, NUM_POINTS);
+y = linspace(-80,80, NUM_POINTS);
+
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        PCwhite = WC * P;
+        PDwhite = WD * P;
+        PEwhite = WE * P;
+        
+        C_dist = sqrt((PCwhite(1)-muC_ged(1))^2 + (PCwhite(2)-muC_ged(2))^2);
+        D_dist = sqrt((PDwhite(1)-muD_ged(1))^2 + (PDwhite(2)-muD_ged(2))^2);
+        E_dist = sqrt((PEwhite(1)-muE_ged(1))^2 + (PEwhite(2)-muE_ged(2))^2);
+        
+        if C_dist < D_dist && C_dist < E_dist
+            Z(i,j) = 0;
+        elseif D_dist < E_dist
+            Z(i,j) = 1;
+        else
+            Z(i,j) = 2;
+        end
+    end
+end
+contour(X,Y,Z,2,'r');
