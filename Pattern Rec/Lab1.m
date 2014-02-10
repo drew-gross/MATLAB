@@ -118,6 +118,48 @@ for i=1:length(x)
 end
 contour(X,Y,Z,2,'r');
 
+%Calculating the confusion matrix:
+CDEMEDConfusion = zeros(3,3);
+
+for i=1:length(CSample)
+    C_dist = sqrt((CSample(i,1) - muC(1))^2 + (CSample(i,2)-muC(2))^2);
+    D_dist = sqrt((CSample(i,1) - muD(1))^2 + (CSample(i,2)-muD(2))^2);
+    E_dist = sqrt((CSample(i,1) - muE(1))^2 + (CSample(i,2)-muE(2))^2);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEMEDConfusion(1,1) = CDEMEDConfusion(1,1) + 1;
+    elseif D_dist < E_dist
+        CDEMEDConfusion(1,2) = CDEMEDConfusion(1,2) + 1;
+    else
+        CDEMEDConfusion(1,3) = CDEMEDConfusion(1,3) + 1;
+    end
+end
+
+for i=1:length(DSample)
+    C_dist = sqrt((DSample(i,1) - muC(1))^2 + (DSample(i,2)-muC(2))^2);
+    D_dist = sqrt((DSample(i,1) - muD(1))^2 + (DSample(i,2)-muD(2))^2);
+    E_dist = sqrt((DSample(i,1) - muE(1))^2 + (DSample(i,2)-muE(2))^2);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEMEDConfusion(2,1) = CDEMEDConfusion(2,1) + 1;
+    elseif D_dist < E_dist
+        CDEMEDConfusion(2,2) = CDEMEDConfusion(2,2) + 1;
+    else
+        CDEMEDConfusion(2,3) = CDEMEDConfusion(2,3) + 1;
+    end
+end
+
+for i=1:length(ESample)
+    C_dist = sqrt((ESample(i,1) - muC(1))^2 + (ESample(i,2)-muC(2))^2);
+    D_dist = sqrt((ESample(i,1) - muD(1))^2 + (ESample(i,2)-muD(2))^2);
+    E_dist = sqrt((ESample(i,1) - muE(1))^2 + (ESample(i,2)-muE(2))^2);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEMEDConfusion(3,1) = CDEMEDConfusion(3,1) + 1;
+    elseif D_dist < E_dist
+        CDEMEDConfusion(3,2) = CDEMEDConfusion(3,2) + 1;
+    else
+        CDEMEDConfusion(3,3) = CDEMEDConfusion(3,3) + 1;
+    end
+end
+
 %GED for A and B
 newfig;
 
@@ -154,6 +196,38 @@ for i=1:length(x)
 end
 contour(X,Y,Z,1,'r');
 
+
+%Calculating the confusion matrix:
+ABGEDConfusion = zeros(2,2);
+for i=1:length(ASample)
+    P = [ASample(i,1);ASample(i,2)];
+    PAwhite = WA * P;
+    PBwhite = WB * P;
+
+    A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
+    B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
+
+    if A_dist < B_dist
+        ABGEDConfusion(1,1) = ABGEDConfusion(1,1) + 1;
+    else
+        ABGEDConfusion(1,2) = ABGEDConfusion(1,2) + 1;
+    end
+end
+
+for i=1:length(BSample)
+    P = [BSample(i,1);BSample(i,2)];
+    PAwhite = WA * P;
+    PBwhite = WB * P;
+
+    A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
+    B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
+
+    if A_dist < B_dist
+        ABGEDConfusion(2,1) = ABGEDConfusion(2,1) + 1;
+    else
+        ABGEDConfusion(2,2) = ABGEDConfusion(2,2) + 1;
+    end
+end
 
 %GED for C, D, and E
 newfig;
@@ -200,6 +274,67 @@ for i=1:length(x)
 end
 contour(X,Y,Z,2,'r');
 
+%Confusion Matrix Calculation
+
+CDEGEDConfusion = zeros(3,3);
+
+for i=1:length(CSample)
+    P = [CSample(i,1);CSample(i,2)];
+    PCwhite = WC * P;
+    PDwhite = WD * P;
+    PEwhite = WE * P;
+
+    C_dist = sqrt((PCwhite(1)-muC_ged(1))^2 + (PCwhite(2)-muC_ged(2))^2);
+    D_dist = sqrt((PDwhite(1)-muD_ged(1))^2 + (PDwhite(2)-muD_ged(2))^2);
+    E_dist = sqrt((PEwhite(1)-muE_ged(1))^2 + (PEwhite(2)-muE_ged(2))^2);
+
+    if C_dist < D_dist && C_dist < E_dist
+        CDEGEDConfusion(1,1) = CDEGEDConfusion(1,1) + 1;
+    elseif D_dist < E_dist
+        CDEGEDConfusion(1,2) = CDEGEDConfusion(1,2) + 1;
+    else
+        CDEGEDConfusion(1,3) = CDEGEDConfusion(1,3) + 1;
+    end
+end
+
+for i=1:length(DSample)
+    P = [DSample(i,1);DSample(i,2)];
+    PCwhite = WC * P;
+    PDwhite = WD * P;
+    PEwhite = WE * P;
+
+    C_dist = sqrt((PCwhite(1)-muC_ged(1))^2 + (PCwhite(2)-muC_ged(2))^2);
+    D_dist = sqrt((PDwhite(1)-muD_ged(1))^2 + (PDwhite(2)-muD_ged(2))^2);
+    E_dist = sqrt((PEwhite(1)-muE_ged(1))^2 + (PEwhite(2)-muE_ged(2))^2);
+
+    if C_dist < D_dist && C_dist < E_dist
+        CDEGEDConfusion(2,1) = CDEGEDConfusion(2,1) + 1;
+    elseif D_dist < E_dist
+        CDEGEDConfusion(2,2) = CDEGEDConfusion(2,2) + 1;
+    else
+        CDEGEDConfusion(2,3) = CDEGEDConfusion(2,3) + 1;
+    end
+end
+
+for i=1:length(ESample)
+    P = [ESample(i,1);ESample(i,2)];
+    PCwhite = WC * P;
+    PDwhite = WD * P;
+    PEwhite = WE * P;
+
+    C_dist = sqrt((PCwhite(1)-muC_ged(1))^2 + (PCwhite(2)-muC_ged(2))^2);
+    D_dist = sqrt((PDwhite(1)-muD_ged(1))^2 + (PDwhite(2)-muD_ged(2))^2);
+    E_dist = sqrt((PEwhite(1)-muE_ged(1))^2 + (PEwhite(2)-muE_ged(2))^2);
+
+    if C_dist < D_dist && C_dist < E_dist
+        CDEGEDConfusion(3,1) = CDEGEDConfusion(3,1) + 1;
+    elseif D_dist < E_dist
+        CDEGEDConfusion(3,2) = CDEGEDConfusion(3,2) + 1;
+    else
+        CDEGEDConfusion(3,3) = CDEGEDConfusion(3,3) + 1;
+    end
+end
+
 %MAP for A and B
 
 newfig;
@@ -222,7 +357,7 @@ for i=1:length(x)
         ProbB = nB;
         WeightedProbB = ProbB * ProbBgivenP;
         
-        if WeightedProbA < WeightedProbB
+        if WeightedProbA > WeightedProbB
             Z(i,j)=0;
         else
             Z(i,j)=1;
@@ -230,6 +365,44 @@ for i=1:length(x)
     end
 end
 contour(X,Y,Z,1,'r');
+
+%Confusion matrix calculation:
+
+ABMAPConfusion = zeros(2,2);
+
+for i=1:length(ASample)
+    P = [ASample(i,1);ASample(i,2)];
+    ProbAgivenP = mvnpdf(P,muA', sigmaA);
+    ProbA = nA;
+    WeightedProbA = ProbA * ProbAgivenP;
+
+    ProbBgivenP = mvnpdf(P,muB', sigmaB);
+    ProbB = nB;
+    WeightedProbB = ProbB * ProbBgivenP;
+
+    if WeightedProbA > WeightedProbB
+        ABMAPConfusion(1,1) = ABMAPConfusion(1,1) + 1;
+    else
+        ABMAPConfusion(1,2) = ABMAPConfusion(1,2) + 1;
+    end
+end
+
+for i=1:length(BSample)
+    P = [BSample(i,1);BSample(i,2)];
+    ProbAgivenP = mvnpdf(P,muA', sigmaA);
+    ProbA = nA;
+    WeightedProbA = ProbA * ProbAgivenP;
+
+    ProbBgivenP = mvnpdf(P,muB', sigmaB);
+    ProbB = nB;
+    WeightedProbB = ProbB * ProbBgivenP;
+
+    if WeightedProbA > WeightedProbB
+        ABMAPConfusion(2,1) = ABMAPConfusion(2,1) + 1;
+    else
+        ABMAPConfusion(2,2) = ABMAPConfusion(2,2) + 1;
+    end
+end
 
 %MAP for C, D, and E
 newfig;
@@ -267,8 +440,79 @@ for i=1:length(x)
     end
 end
 
-
 contour(X,Y,Z,2,'r');
+
+%Confusion Matrix Calculation:
+CDEMAPConfusion = zeros(3,3);
+
+for i=1:length(CSample)
+    P = [CSample(i,1);CSample(i,2)];
+    ProbCgivenP = mvnpdf(P,muC', sigmaC);
+    ProbC = nC;
+    WeightedProbC = ProbC * ProbCgivenP;
+
+    ProbDgivenP = mvnpdf(P,muD', sigmaD);
+    ProbD = nD;
+    WeightedProbD = ProbD * ProbDgivenP;
+
+    ProbEgivenP = mvnpdf(P,muE', sigmaE);
+    ProbE = nE;
+    WeightedProbE = ProbE * ProbEgivenP;
+
+    if WeightedProbC > WeightedProbD && WeightedProbC > WeightedProbE
+        CDEMAPConfusion(1,1) = CDEMAPConfusion(1,1) + 1;
+    elseif WeightedProbD > WeightedProbE
+        CDEMAPConfusion(1,2) = CDEMAPConfusion(1,2) + 1;
+    else
+        CDEMAPConfusion(1,3) = CDEMAPConfusion(1,3) + 1;
+    end
+end
+
+for i=1:length(DSample)
+    P = [DSample(i,1);DSample(i,2)];
+    ProbCgivenP = mvnpdf(P,muC', sigmaC);
+    ProbC = nC;
+    WeightedProbC = ProbC * ProbCgivenP;
+
+    ProbDgivenP = mvnpdf(P,muD', sigmaD);
+    ProbD = nD;
+    WeightedProbD = ProbD * ProbDgivenP;
+
+    ProbEgivenP = mvnpdf(P,muE', sigmaE);
+    ProbE = nE;
+    WeightedProbE = ProbE * ProbEgivenP;
+
+    if WeightedProbC > WeightedProbD && WeightedProbC > WeightedProbE
+        CDEMAPConfusion(2,1) = CDEMAPConfusion(2,1) + 1;
+    elseif WeightedProbD > WeightedProbE
+        CDEMAPConfusion(2,2) = CDEMAPConfusion(2,2) + 1;
+    else
+        CDEMAPConfusion(2,3) = CDEMAPConfusion(2,3) + 1;
+    end
+end
+
+for i=1:length(ESample)
+    P = [ESample(i,1);ESample(i,2)];
+    ProbCgivenP = mvnpdf(P,muC', sigmaC);
+    ProbC = nC;
+    WeightedProbC = ProbC * ProbCgivenP;
+
+    ProbDgivenP = mvnpdf(P,muD', sigmaD);
+    ProbD = nD;
+    WeightedProbD = ProbD * ProbDgivenP;
+
+    ProbEgivenP = mvnpdf(P,muE', sigmaE);
+    ProbE = nE;
+    WeightedProbE = ProbE * ProbEgivenP;
+
+    if WeightedProbC > WeightedProbD && WeightedProbC > WeightedProbE
+        CDEMAPConfusion(3,1) = CDEMAPConfusion(3,1) + 1;
+    elseif WeightedProbD > WeightedProbE
+        CDEMAPConfusion(3,2) = CDEMAPConfusion(3,2) + 1;
+    else
+        CDEMAPConfusion(3,3) = CDEMAPConfusion(3,3) + 1;
+    end
+end
 
 %NN for A and B
 newfig;
@@ -300,6 +544,44 @@ for i=1:length(x)
 end
 
 contour(X,Y,Z,1,'r');
+
+%Confusion Matrix Calculation
+
+ABNNConfusion = zeros(2,2);
+
+for i=1:length(ASample)
+    P = [ASample(i,1) ASample(i,2)];
+    A_dist = Inf;
+    for k=1:length(A)
+        A_dist = min(A_dist, norm(A(k,:) - P));
+    end
+    B_dist = Inf;
+    for k=1:length(B)
+        B_dist = min(B_dist, norm(B(k,:) - P));
+    end
+    if A_dist < B_dist
+        ABNNConfusion(1,1) = ABNNConfusion(1,1) + 1;
+    else
+        ABNNConfusion(1,2) = ABNNConfusion(1,2) + 1;
+    end
+end
+
+for i=1:length(BSample)
+    P = [BSample(i,1) BSample(i,2)];
+    A_dist = Inf;
+    for k=1:length(A)
+        A_dist = min(A_dist, norm(A(k,:) - P));
+    end
+    B_dist = Inf;
+    for k=1:length(B)
+        B_dist = min(B_dist, norm(B(k,:) - P));
+    end
+    if A_dist < B_dist
+        ABNNConfusion(2,1) = ABNNConfusion(2,1) + 1;
+    else
+        ABNNConfusion(2,2) = ABNNConfusion(2,2) + 1;
+    end
+end
 
 % NN for Class C, D, and E
 newfig;
@@ -338,6 +620,79 @@ end
 contour(X,Y,Z,1,'r');
 contour(X,Y,Z.*-1,1,'r');
 
+%Calculating Confusion Matrix
+
+CDENNConfusion = zeros(3,3);
+
+for i=1:length(CSample)
+    P = [CSample(i,1) CSample(i,2)];
+    C_dist = Inf;
+    for k=1:length(C)
+        C_dist = min(C_dist, norm(C(k,:) - P));
+    end
+    D_dist = Inf;
+    for k=1:length(D)
+        D_dist = min(D_dist, norm(D(k,:) - P));
+    end
+    E_dist = Inf;
+    for k=1:length(E)
+        E_dist = min(E_dist, norm(E(k,:) - P));
+    end
+    if C_dist < D_dist && C_dist < E_dist
+        CDENNConfusion(1,1) = CDENNConfusion(1,1) + 1;
+    elseif D_dist < E_dist
+        CDENNConfusion(1,2) = CDENNConfusion(1,2) + 1;
+    else
+        CDENNConfusion(1,3) = CDENNConfusion(1,3) + 1;
+    end
+end
+
+for i=1:length(DSample)
+    P = [DSample(i,1) DSample(i,2)];
+    C_dist = Inf;
+    for k=1:length(C)
+        C_dist = min(C_dist, norm(C(k,:) - P));
+    end
+    D_dist = Inf;
+    for k=1:length(D)
+        D_dist = min(D_dist, norm(D(k,:) - P));
+    end
+    E_dist = Inf;
+    for k=1:length(E)
+        E_dist = min(E_dist, norm(E(k,:) - P));
+    end
+    if C_dist < D_dist && C_dist < E_dist
+        CDENNConfusion(2,1) = CDENNConfusion(2,1) + 1;
+    elseif D_dist < E_dist
+        CDENNConfusion(2,2) = CDENNConfusion(2,2) + 1;
+    else
+        CDENNConfusion(2,3) = CDENNConfusion(2,3) + 1;
+    end
+end
+
+for i=1:length(ESample)
+    P = [ESample(i,1) ESample(i,2)];
+    C_dist = Inf;
+    for k=1:length(C)
+        C_dist = min(C_dist, norm(C(k,:) - P));
+    end
+    D_dist = Inf;
+    for k=1:length(D)
+        D_dist = min(D_dist, norm(D(k,:) - P));
+    end
+    E_dist = Inf;
+    for k=1:length(E)
+        E_dist = min(E_dist, norm(E(k,:) - P));
+    end
+    if C_dist < D_dist && C_dist < E_dist
+        CDENNConfusion(3,1) = CDENNConfusion(3,1) + 1;
+    elseif D_dist < E_dist
+        CDENNConfusion(3,2) = CDENNConfusion(3,2) + 1;
+    else
+        CDENNConfusion(3,3) = CDENNConfusion(3,3) + 1;
+    end
+end
+
 %5NN for A and B
 newfig;
 
@@ -364,6 +719,37 @@ end
 
 contour(X,Y,Z,1,'r');
 
+%Calculating the confusion matrix
+
+ABKNNConfusion = zeros(2,2);
+
+for i=1:length(ASample)
+    P = [ASample(i,1) ASample(i,2)];
+    kNearestA = knearest(A, P, 5);
+    kNearestB = knearest(B, P, 5);
+    A_proto = mean(kNearestA);
+    B_proto = mean(kNearestB);
+    if norm(P - A_proto) < norm(P - B_proto)
+        ABKNNConfusion(1,1) = ABKNNConfusion(1,1) + 1;
+    else
+        ABKNNConfusion(1,2) = ABKNNConfusion(1,2) + 1;
+    end
+end
+
+for i=1:length(BSample)
+    P = [BSample(i,1) BSample(i,2)];
+    kNearestA = knearest(A, P, 5);
+    kNearestB = knearest(B, P, 5);
+    A_proto = mean(kNearestA);
+    B_proto = mean(kNearestB);
+    if norm(P - A_proto) < norm(P - B_proto)
+        ABKNNConfusion(2,1) = ABKNNConfusion(2,1) + 1;
+    else
+        ABKNNConfusion(2,2) = ABKNNConfusion(2,2) + 1;
+    end
+end
+
+%5NN for C, D, and E
 newfig;
 
 scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
@@ -397,3 +783,66 @@ end
 
 contour(X,Y,Z,1,'r');
 contour(X,Y,Z.*-1,1,'r');
+
+%Calculating Confusion Matrix
+
+CDEKNNConfusion = zeros(3,3);
+for i=1:length(CSample)
+    P = [CSample(i,1) CSample(i,2)];
+    kNearestC = knearest(C, P, 5);
+    kNearestD = knearest(D, P, 5);
+    kNearestE = knearest(E, P, 5);
+    C_proto = mean(kNearestC);
+    D_proto = mean(kNearestD);
+    E_proto = mean(kNearestE);
+    C_dist = norm(P - C_proto);
+    D_dist = norm(P - D_proto);
+    E_dist = norm(P - E_proto);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEKNNConfusion(1,1) = CDEKNNConfusion(1,1) + 1;
+    elseif D_dist < E_dist
+        CDEKNNConfusion(1,2) = CDEKNNConfusion(1,2) + 1;
+    else
+        CDEKNNConfusion(1,3) = CDEKNNConfusion(1,3) + 1;
+    end
+end
+
+for i=1:length(DSample)
+    P = [DSample(i,1) DSample(i,2)];
+    kNearestC = knearest(C, P, 5);
+    kNearestD = knearest(D, P, 5);
+    kNearestE = knearest(E, P, 5);
+    C_proto = mean(kNearestC);
+    D_proto = mean(kNearestD);
+    E_proto = mean(kNearestE);
+    C_dist = norm(P - C_proto);
+    D_dist = norm(P - D_proto);
+    E_dist = norm(P - E_proto);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEKNNConfusion(2,1) = CDEKNNConfusion(2,1) + 1;
+    elseif D_dist < E_dist
+        CDEKNNConfusion(2,2) = CDEKNNConfusion(2,2) + 1;
+    else
+        CDEKNNConfusion(2,3) = CDEKNNConfusion(2,3) + 1;
+    end
+end
+
+for i=1:length(ESample)
+    P = [ESample(i,1) ESample(i,2)];
+    kNearestC = knearest(C, P, 5);
+    kNearestD = knearest(D, P, 5);
+    kNearestE = knearest(E, P, 5);
+    C_proto = mean(kNearestC);
+    D_proto = mean(kNearestD);
+    E_proto = mean(kNearestE);
+    C_dist = norm(P - C_proto);
+    D_dist = norm(P - D_proto);
+    E_dist = norm(P - E_proto);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEKNNConfusion(3,1) = CDEKNNConfusion(3,1) + 1;
+    elseif D_dist < E_dist
+        CDEKNNConfusion(3,2) = CDEKNNConfusion(3,2) + 1;
+    else
+        CDEKNNConfusion(3,3) = CDEKNNConfusion(3,3) + 1;
+    end
+end
