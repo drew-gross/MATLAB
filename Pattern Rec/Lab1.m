@@ -1,5 +1,5 @@
 NUM_POINTS = 200;
-NUM_POINTS_NN = 120;
+NUM_POINTS_NN = 100;
 
 % part 1
 muA = [5 10];
@@ -305,5 +305,65 @@ for i=1:length(x)
         end
     end
 end
+contour(X,Y,Z,1,'r');
+contour(X,Y,Z.*-1,1,'r');
+
+5NN for A and B
+newfig;
+
+scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
+x = linspace(-20,30,NUM_POINTS_NN);
+y = linspace(-5,30,NUM_POINTS_NN);
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j) Y(i,j)];
+        kNearestA = knearest(A, P, 5);
+        kNearestB = knearest(B, P, 5);
+        A_proto = mean(kNearestA);
+        B_proto = mean(kNearestB);
+        if norm(P - A_proto) < norm(P - B_proto)
+            Z(i,j) = 0;
+        else
+            Z(i,j) = 1;
+        end
+    end
+end
+
+contour(X,Y,Z,1,'r');
+
+newfig;
+
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+x = linspace(-25,45, NUM_POINTS_NN);
+y = linspace(-80,80, NUM_POINTS_NN);
+
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j) Y(i,j)];
+        kNearestC = knearest(C, P, 5);
+        kNearestD = knearest(D, P, 5);
+        kNearestE = knearest(E, P, 5);
+        C_proto = mean(kNearestC);
+        D_proto = mean(kNearestD);
+        E_proto = mean(kNearestE);
+        C_dist = norm(P - C_proto);
+        D_dist = norm(P - D_proto);
+        E_dist = norm(P - E_proto);
+        if C_dist < D_dist && C_dist < E_dist
+            Z(i,j) = 0;
+        elseif D_dist < E_dist
+            Z(i,j) = 1;
+        else
+            Z(i,j) = 2;
+        end
+    end
+end
+
 contour(X,Y,Z,1,'r');
 contour(X,Y,Z.*-1,1,'r');
