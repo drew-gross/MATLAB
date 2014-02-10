@@ -298,6 +298,9 @@ for i=1:length(x)
         end
     end
 end
+
+contour(X,Y,Z,1,'r');
+
 % NN for Class C, D, and E
 newfig;
 
@@ -335,7 +338,7 @@ end
 contour(X,Y,Z,1,'r');
 contour(X,Y,Z.*-1,1,'r');
 
-5NN for A and B
+%5NN for A and B
 newfig;
 
 scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
