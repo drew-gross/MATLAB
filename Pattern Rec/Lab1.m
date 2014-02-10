@@ -118,6 +118,48 @@ for i=1:length(x)
 end
 contour(X,Y,Z,2,'r');
 
+%Calculating the confusion matrix:
+CDEMEDConfusion = zeros(3,3);
+
+for i=1:length(CSample)
+    C_dist = sqrt((CSample(i,1) - muC(1))^2 + (CSample(i,2)-muC(2))^2);
+    D_dist = sqrt((CSample(i,1) - muD(1))^2 + (CSample(i,2)-muD(2))^2);
+    E_dist = sqrt((CSample(i,1) - muE(1))^2 + (CSample(i,2)-muE(2))^2);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEMEDConfusion(1,1) = CDEMEDConfusion(1,1) + 1;
+    elseif D_dist < E_dist
+        CDEMEDConfusion(1,2) = CDEMEDConfusion(1,2) + 1;
+    else
+        CDEMEDConfusion(1,3) = CDEMEDConfusion(1,3) + 1;
+    end
+end
+
+for i=1:length(DSample)
+    C_dist = sqrt((DSample(i,1) - muC(1))^2 + (DSample(i,2)-muC(2))^2);
+    D_dist = sqrt((DSample(i,1) - muD(1))^2 + (DSample(i,2)-muD(2))^2);
+    E_dist = sqrt((DSample(i,1) - muE(1))^2 + (DSample(i,2)-muE(2))^2);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEMEDConfusion(2,1) = CDEMEDConfusion(2,1) + 1;
+    elseif D_dist < E_dist
+        CDEMEDConfusion(2,2) = CDEMEDConfusion(2,2) + 1;
+    else
+        CDEMEDConfusion(2,3) = CDEMEDConfusion(2,3) + 1;
+    end
+end
+
+for i=1:length(ESample)
+    C_dist = sqrt((ESample(i,1) - muC(1))^2 + (ESample(i,2)-muC(2))^2);
+    D_dist = sqrt((ESample(i,1) - muD(1))^2 + (ESample(i,2)-muD(2))^2);
+    E_dist = sqrt((ESample(i,1) - muE(1))^2 + (ESample(i,2)-muE(2))^2);
+    if C_dist < D_dist && C_dist < E_dist
+        CDEMEDConfusion(3,1) = CDEMEDConfusion(3,1) + 1;
+    elseif D_dist < E_dist
+        CDEMEDConfusion(3,2) = CDEMEDConfusion(3,2) + 1;
+    else
+        CDEMEDConfusion(3,3) = CDEMEDConfusion(3,3) + 1;
+    end
+end
+
 %GED for A and B
 newfig;
 
@@ -153,6 +195,41 @@ for i=1:length(x)
     end
 end
 contour(X,Y,Z,1,'r');
+
+
+%Calculating the confusion matrix:
+ABGEDConfusion = zeros(2,2);
+for i=1:length(ASample)
+    P = [ASample(i,1);ASample(i,2)];
+    PAwhite = WA * P;
+    PBwhite = WB * P;
+
+    A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
+    B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
+
+    if A_dist < B_dist
+        ABGEDConfusion(1,1) = ABGEDConfusion(1,1) + 1;
+    else
+        ABGEDConfusion(1,2) = ABGEDConfusion(1,2) + 1;
+    end
+end
+
+for i=1:length(BSample)
+    P = [BSample(i,1);BSample(i,2)];
+    PAwhite = WA * P;
+    PBwhite = WB * P;
+
+    A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
+    B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
+
+    if A_dist < B_dist
+        ABGEDConfusion(2,1) = ABGEDConfusion(2,1) + 1;
+    else
+        ABGEDConfusion(2,2) = ABGEDConfusion(2,2) + 1;
+    end
+end
+
+ABGEDConfusion
 
 
 %GED for C, D, and E
