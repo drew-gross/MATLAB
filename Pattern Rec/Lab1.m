@@ -1,4 +1,4 @@
-NUM_POINTS = 50;
+NUM_POINTS = 200;
 NUM_POINTS_NN = 120;
 
 % part 1
@@ -173,6 +173,76 @@ for i=1:length(x)
 end
 contour(X,Y,Z,2,'r');
 
+%MAP for A and B
+
+newfig;
+title('MAP A and B');
+
+scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
+x = linspace(-20,30,NUM_POINTS);
+y = linspace(-5,30,NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        ProbAgivenP = mvnpdf(P,muA', sigmaA);
+        ProbA = nA;
+        WeightedProbA = ProbA * ProbAgivenP;
+        
+        ProbBgivenP = mvnpdf(P,muB', sigmaB);
+        ProbB = nB;
+        WeightedProbB = ProbB * ProbBgivenP;
+        
+        if WeightedProbA < WeightedProbB
+            Z(i,j)=0;
+        else
+            Z(i,j)=1;
+        end
+    end
+end
+contour(X,Y,Z,1,'r');
+
+%MAP for C, D, and E
+newfig;
+title('MAP C, D, and E');
+
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+
+x = linspace(-25,45, NUM_POINTS);
+y = linspace(-80,80, NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        ProbCgivenP = mvnpdf(P,muC', sigmaC);
+        ProbC = nC;
+        WeightedProbC = ProbC * ProbCgivenP;
+        
+        ProbDgivenP = mvnpdf(P,muD', sigmaD);
+        ProbD = nD;
+        WeightedProbD = ProbD * ProbDgivenP;
+        
+        ProbEgivenP = mvnpdf(P,muE', sigmaE);
+        ProbE = nE;
+        WeightedProbE = ProbE * ProbEgivenP;
+    
+        if WeightedProbC > WeightedProbD && WeightedProbC > WeightedProbE
+            Z(i,j) = 0;
+        elseif WeightedProbD > WeightedProbE
+            Z(i,j) = 1;
+        else
+            Z(i,j) = 2;
+        end
+    end
+end
+
+
+contour(X,Y,Z,2,'r');
+
 %NN for A and B
 newfig;
 
@@ -184,6 +254,7 @@ y = linspace(-5,30,NUM_POINTS_NN);
 Z = zeros(length(x));
 for i=1:length(x)
     for j=1:length(y)
+
         P = [X(i,j) Y(i,j)];
         A_dist = Inf;
         for k=1:length(A)
@@ -200,8 +271,6 @@ for i=1:length(x)
         end
     end
 end
-contour(X,Y,Z,1,'r');
-
 % NN for Class C, D, and E
 newfig;
 
@@ -209,6 +278,7 @@ scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.
 plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
 x = linspace(-25,45, NUM_POINTS_NN);
 y = linspace(-80,80, NUM_POINTS_NN);
+
 [X,Y] = meshgrid(x,y);
 Z = zeros(length(x));
 for i=1:length(x)
