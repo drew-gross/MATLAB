@@ -57,19 +57,19 @@ plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
 x = linspace(-20,30,NUM_POINTS);
 y = linspace(-5,30,NUM_POINTS);
 [X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
+Z_med_AB = zeros(length(x));
 for i=1:length(x)
     for j=1:length(y)
         A_dist = sqrt((X(i,j)-muA(1))^2 + (Y(i,j)-muA(2))^2);
         B_dist = sqrt((X(i,j)-muB(1))^2 + (Y(i,j)-muB(2))^2);
         if A_dist < B_dist
-            Z(i,j)=0;
+            Z_med_AB(i,j)=0;
         else
-            Z(i,j)=1;
+            Z_med_AB(i,j)=1;
         end
     end
 end
-contour(X,Y,Z,1,'r');
+contour(X,Y,Z_med_AB,1,'r');
 
 %Calculating the confusion matrix:
 ABMEDConfusion = zeros(2,2);
