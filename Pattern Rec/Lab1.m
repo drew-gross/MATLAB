@@ -1,5 +1,5 @@
 NUM_POINTS = 200;
-NUM_POINTS_NN = 100;
+NUM_POINTS_NN = 90;
 
 % part 1
 muA = [5 10];
@@ -51,9 +51,6 @@ title('Class C, D, and E');
 %Classifiers Section (i.e. section 3)
 
 % MED for A and B
-newfig;
-scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
 x = linspace(-20,30,NUM_POINTS);
 y = linspace(-5,30,NUM_POINTS);
 [X,Y] = meshgrid(x,y);
@@ -69,7 +66,72 @@ for i=1:length(x)
         end
     end
 end
+
+% GED for A and B
+[eig_vec_A, eig_val_A] = eig(sigmaA);
+[eig_vec_B, eig_val_B] = eig(sigmaB);
+
+WA = (eig_val_A^(-1/2))*(eig_vec_A');
+WB = (eig_val_B^(-1/2))*(eig_vec_B');
+
+muA_ged = WA * muA';
+muB_ged = WB * muB';
+
+x = linspace(-20,30,NUM_POINTS);
+y = linspace(-5,30,NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z_ged_AB = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        PAwhite = WA * P;
+        PBwhite = WB * P;
+        
+        A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
+        B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
+        
+        if A_dist < B_dist
+            Z_ged_AB(i,j)=0;
+        else
+            Z_ged_AB(i,j)=1;
+        end
+    end
+end
+
+% MAP for A and B
+
+x = linspace(-20,30,NUM_POINTS);
+y = linspace(-5,30,NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z_map_AB = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        ProbAgivenP = mvnpdf(P,muA', sigmaA);
+        ProbA = nA;
+        WeightedProbA = ProbA * ProbAgivenP;
+        
+        ProbBgivenP = mvnpdf(P,muB', sigmaB);
+        ProbB = nB;
+        WeightedProbB = ProbB * ProbBgivenP;
+        
+        if WeightedProbA > WeightedProbB
+            Z_map_AB(i,j)=0;
+        else
+            Z_map_AB(i,j)=1;
+        end
+    end
+end
+
+newfig;
+xlabel('X');
+ylabel('Y');
+title('MED, GED, and MAP for Class A and B');
+scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
 contour(X,Y,Z_med_AB,1,'r');
+contour(X,Y,Z_ged_AB,1,'g');
+contour(X,Y,Z_map_AB,1,'b');
 
 %Calculating the confusion matrix:
 ABMEDConfusion = zeros(2,2);
@@ -95,28 +157,107 @@ for i=1:length(BSample)
 end
 
 % MED for C, D, and E
-newfig;
-scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
 x = linspace(-25,45, NUM_POINTS);
 y = linspace(-80,80, NUM_POINTS);
 [X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
+Z_med_CDE = zeros(length(x));
 for i=1:length(x)
     for j=1:length(y)
         C_dist = sqrt((X(i,j) - muC(1))^2 + (Y(i,j)-muC(2))^2);
         D_dist = sqrt((X(i,j) - muD(1))^2 + (Y(i,j)-muD(2))^2);
         E_dist = sqrt((X(i,j) - muE(1))^2 + (Y(i,j)-muE(2))^2);
         if C_dist < D_dist && C_dist < E_dist
-            Z(i,j) = 0;
+            Z_med_CDE(i,j) = 0;
         elseif D_dist < E_dist
-            Z(i,j) = 1;
+            Z_med_CDE(i,j) = 1;
         else
-            Z(i,j) = 2;
+            Z_med_CDE(i,j) = 2;
         end
     end
 end
-contour(X,Y,Z,2,'r');
+
+%GED for C, D, and E
+
+[eig_vec_C, eig_val_C] = eig(sigmaC);
+[eig_vec_D, eig_val_D] = eig(sigmaD);
+[eig_vec_E, eig_val_E] = eig(sigmaE);
+
+WC = (eig_val_C^(-1/2))*(eig_vec_C');
+WD = (eig_val_D^(-1/2))*(eig_vec_D');
+WE = (eig_val_E^(-1/2))*(eig_vec_E');
+
+muC_ged = WC * muC';
+muD_ged = WD * muD';
+muE_ged = WE * muE';
+
+x = linspace(-25,45, NUM_POINTS);
+y = linspace(-80,80, NUM_POINTS);
+
+[X,Y] = meshgrid(x,y);
+Z_ged_CDE = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        PCwhite = WC * P;
+        PDwhite = WD * P;
+        PEwhite = WE * P;
+        
+        C_dist = sqrt((PCwhite(1)-muC_ged(1))^2 + (PCwhite(2)-muC_ged(2))^2);
+        D_dist = sqrt((PDwhite(1)-muD_ged(1))^2 + (PDwhite(2)-muD_ged(2))^2);
+        E_dist = sqrt((PEwhite(1)-muE_ged(1))^2 + (PEwhite(2)-muE_ged(2))^2);
+        
+        if C_dist < D_dist && C_dist < E_dist
+            Z_ged_CDE(i,j) = 0;
+        elseif D_dist < E_dist
+            Z_ged_CDE(i,j) = 1;
+        else
+            Z_ged_CDE(i,j) = 2;
+        end
+    end
+end
+
+%MAP for C, D, and E
+x = linspace(-25,45, NUM_POINTS);
+y = linspace(-80,80, NUM_POINTS);
+[X,Y] = meshgrid(x,y);
+Z_map_CDE = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j);Y(i,j)];
+        ProbCgivenP = mvnpdf(P,muC', sigmaC);
+        ProbC = nC;
+        WeightedProbC = ProbC * ProbCgivenP;
+        
+        ProbDgivenP = mvnpdf(P,muD', sigmaD);
+        ProbD = nD;
+        WeightedProbD = ProbD * ProbDgivenP;
+        
+        ProbEgivenP = mvnpdf(P,muE', sigmaE);
+        ProbE = nE;
+        WeightedProbE = ProbE * ProbEgivenP;
+    
+        if WeightedProbC > WeightedProbD && WeightedProbC > WeightedProbE
+            Z_map_CDE(i,j) = 0;
+        elseif WeightedProbD > WeightedProbE
+            Z_map_CDE(i,j) = 1;
+        else
+            Z_map_CDE(i,j) = 2;
+        end
+    end
+end
+
+newfig;
+xlabel('X');
+ylabel('Y');
+title('MED, GED, and MAP for class C, D, and E');
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+contour(X,Y,Z_med_CDE,1,'r');
+contour(X,Y,Z_med_CDE.*-1,1,'r');
+contour(X,Y,Z_ged_CDE,1,'g');
+contour(X,Y,Z_ged_CDE.*-1,1,'g');
+contour(X,Y,Z_map_CDE,1,'b');
+contour(X,Y,Z_map_CDE.*-1,1,'b');
 
 %Calculating the confusion matrix:
 CDEMEDConfusion = zeros(3,3);
@@ -160,43 +301,6 @@ for i=1:length(ESample)
     end
 end
 
-%GED for A and B
-newfig;
-
-[eig_vec_A, eig_val_A] = eig(sigmaA);
-[eig_vec_B, eig_val_B] = eig(sigmaB);
-
-WA = (eig_val_A^(-1/2))*(eig_vec_A');
-WB = (eig_val_B^(-1/2))*(eig_vec_B');
-
-muA_ged = WA * muA';
-muB_ged = WB * muB';
-
-scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
-x = linspace(-20,30,NUM_POINTS);
-y = linspace(-5,30,NUM_POINTS);
-[X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
-        P = [X(i,j);Y(i,j)];
-        PAwhite = WA * P;
-        PBwhite = WB * P;
-        
-        A_dist = sqrt((PAwhite(1)-muA_ged(1))^2 + (PAwhite(2)-muA_ged(2))^2);
-        B_dist = sqrt((PBwhite(1)-muB_ged(1))^2 + (PBwhite(2)-muB_ged(2))^2);
-        
-        if A_dist < B_dist
-            Z(i,j)=0;
-        else
-            Z(i,j)=1;
-        end
-    end
-end
-contour(X,Y,Z,1,'r');
-
-
 %Calculating the confusion matrix:
 ABGEDConfusion = zeros(2,2);
 for i=1:length(ASample)
@@ -229,50 +333,7 @@ for i=1:length(BSample)
     end
 end
 
-%GED for C, D, and E
-newfig;
 
-[eig_vec_C, eig_val_C] = eig(sigmaC);
-[eig_vec_D, eig_val_D] = eig(sigmaD);
-[eig_vec_E, eig_val_E] = eig(sigmaE);
-
-WC = (eig_val_C^(-1/2))*(eig_vec_C');
-WD = (eig_val_D^(-1/2))*(eig_vec_D');
-WE = (eig_val_E^(-1/2))*(eig_vec_E');
-
-muC_ged = WC * muC';
-muD_ged = WD * muD';
-muE_ged = WE * muE';
-
-scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
-
-x = linspace(-25,45, NUM_POINTS);
-y = linspace(-80,80, NUM_POINTS);
-
-[X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
-        P = [X(i,j);Y(i,j)];
-        PCwhite = WC * P;
-        PDwhite = WD * P;
-        PEwhite = WE * P;
-        
-        C_dist = sqrt((PCwhite(1)-muC_ged(1))^2 + (PCwhite(2)-muC_ged(2))^2);
-        D_dist = sqrt((PDwhite(1)-muD_ged(1))^2 + (PDwhite(2)-muD_ged(2))^2);
-        E_dist = sqrt((PEwhite(1)-muE_ged(1))^2 + (PEwhite(2)-muE_ged(2))^2);
-        
-        if C_dist < D_dist && C_dist < E_dist
-            Z(i,j) = 0;
-        elseif D_dist < E_dist
-            Z(i,j) = 1;
-        else
-            Z(i,j) = 2;
-        end
-    end
-end
-contour(X,Y,Z,2,'r');
 
 %Confusion Matrix Calculation
 
@@ -335,37 +396,6 @@ for i=1:length(ESample)
     end
 end
 
-%MAP for A and B
-
-newfig;
-title('MAP A and B');
-
-scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
-x = linspace(-20,30,NUM_POINTS);
-y = linspace(-5,30,NUM_POINTS);
-[X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
-        P = [X(i,j);Y(i,j)];
-        ProbAgivenP = mvnpdf(P,muA', sigmaA);
-        ProbA = nA;
-        WeightedProbA = ProbA * ProbAgivenP;
-        
-        ProbBgivenP = mvnpdf(P,muB', sigmaB);
-        ProbB = nB;
-        WeightedProbB = ProbB * ProbBgivenP;
-        
-        if WeightedProbA > WeightedProbB
-            Z(i,j)=0;
-        else
-            Z(i,j)=1;
-        end
-    end
-end
-contour(X,Y,Z,1,'r');
-
 %Confusion matrix calculation:
 
 ABMAPConfusion = zeros(2,2);
@@ -403,44 +433,6 @@ for i=1:length(BSample)
         ABMAPConfusion(2,2) = ABMAPConfusion(2,2) + 1;
     end
 end
-
-%MAP for C, D, and E
-newfig;
-title('MAP C, D, and E');
-
-scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
-
-x = linspace(-25,45, NUM_POINTS);
-y = linspace(-80,80, NUM_POINTS);
-[X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
-        P = [X(i,j);Y(i,j)];
-        ProbCgivenP = mvnpdf(P,muC', sigmaC);
-        ProbC = nC;
-        WeightedProbC = ProbC * ProbCgivenP;
-        
-        ProbDgivenP = mvnpdf(P,muD', sigmaD);
-        ProbD = nD;
-        WeightedProbD = ProbD * ProbDgivenP;
-        
-        ProbEgivenP = mvnpdf(P,muE', sigmaE);
-        ProbE = nE;
-        WeightedProbE = ProbE * ProbEgivenP;
-    
-        if WeightedProbC > WeightedProbD && WeightedProbC > WeightedProbE
-            Z(i,j) = 0;
-        elseif WeightedProbD > WeightedProbE
-            Z(i,j) = 1;
-        else
-            Z(i,j) = 2;
-        end
-    end
-end
-
-contour(X,Y,Z,2,'r');
 
 %Confusion Matrix Calculation:
 CDEMAPConfusion = zeros(3,3);
@@ -515,14 +507,10 @@ for i=1:length(ESample)
 end
 
 %NN for A and B
-newfig;
-
-scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
 x = linspace(-20,30,NUM_POINTS_NN);
 y = linspace(-5,30,NUM_POINTS_NN);
 [X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
+Z_nn_AB = zeros(length(x));
 for i=1:length(x)
     for j=1:length(y)
 
@@ -536,14 +524,42 @@ for i=1:length(x)
             B_dist = min(B_dist, norm(B(k,:) - P));
         end
         if A_dist < B_dist
-            Z(i,j) = 0;
+            Z_nn_AB(i,j) = 0;
         else
-            Z(i,j) = 1;
+            Z_nn_AB(i,j) = 1;
         end
     end
 end
 
-contour(X,Y,Z,1,'r');
+%5NN for A and B
+
+x = linspace(-20,30,NUM_POINTS_NN);
+y = linspace(-5,30,NUM_POINTS_NN);
+[X,Y] = meshgrid(x,y);
+Z_5nn_AB = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j) Y(i,j)];
+        kNearestA = knearest(A, P, 5);
+        kNearestB = knearest(B, P, 5);
+        A_proto = mean(kNearestA);
+        B_proto = mean(kNearestB);
+        if norm(P - A_proto) < norm(P - B_proto)
+            Z_5nn_AB(i,j) = 0;
+        else
+            Z_5nn_AB(i,j) = 1;
+        end
+    end
+end
+
+newfig;
+xlabel('X');
+ylabel('Y');
+title('NN and 5NN for A and B');
+scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
+plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
+contour(X,Y,Z_nn_AB,1,'r');
+contour(X,Y,Z_5nn_AB,1,'b');
 
 %Confusion Matrix Calculation
 
@@ -584,15 +600,10 @@ for i=1:length(BSample)
 end
 
 % NN for Class C, D, and E
-newfig;
-
-scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
 x = linspace(-25,45, NUM_POINTS_NN);
 y = linspace(-80,80, NUM_POINTS_NN);
-
 [X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
+Z_nn_CDE = zeros(length(x));
 for i=1:length(x)
     for j=1:length(y)
         P = [X(i,j) Y(i,j)];
@@ -609,16 +620,51 @@ for i=1:length(x)
             E_dist = min(E_dist, norm(E(k,:) - P));
         end
         if C_dist < D_dist && C_dist < E_dist
-            Z(i,j) = 0;
+            Z_nn_CDE(i,j) = 0;
         elseif D_dist < E_dist
-            Z(i,j) = 1;
+            Z_nn_CDE(i,j) = 1;
         else
-            Z(i,j) = 2;
+            Z_nn_CDE(i,j) = 2;
         end
     end
 end
-contour(X,Y,Z,1,'r');
-contour(X,Y,Z.*-1,1,'r');
+%5NN for C, D, and E
+x = linspace(-25,45, NUM_POINTS_NN);
+y = linspace(-80,80, NUM_POINTS_NN);
+[X,Y] = meshgrid(x,y);
+Z_5nn_CDE = zeros(length(x));
+for i=1:length(x)
+    for j=1:length(y)
+        P = [X(i,j) Y(i,j)];
+        kNearestC = knearest(C, P, 5);
+        kNearestD = knearest(D, P, 5);
+        kNearestE = knearest(E, P, 5);
+        C_proto = mean(kNearestC);
+        D_proto = mean(kNearestD);
+        E_proto = mean(kNearestE);
+        C_dist = norm(P - C_proto);
+        D_dist = norm(P - D_proto);
+        E_dist = norm(P - E_proto);
+        if C_dist < D_dist && C_dist < E_dist
+            Z_5nn_CDE(i,j) = 0;
+        elseif D_dist < E_dist
+            Z_5nn_CDE(i,j) = 1;
+        else
+            Z_5nn_CDE(i,j) = 2;
+        end
+    end
+end
+
+newfig;
+xlabel('x');
+ylabel('y');
+title('NN and 5NN for C, D, and E');
+scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
+plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
+contour(X,Y,Z_nn_CDE,1,'r');
+contour(X,Y,Z_nn_CDE.*-1,1,'r');
+contour(X,Y,Z_5nn_CDE,1,'b');
+contour(X,Y,Z_5nn_CDE.*-1,1,'b');
 
 %Calculating Confusion Matrix
 
@@ -693,32 +739,6 @@ for i=1:length(ESample)
     end
 end
 
-%5NN for A and B
-newfig;
-
-scatter(A(:,1),A(:,2),'x');scatter(B(:,1),B(:,2), '+');
-plot_ellipse(5, 10, 0, 8, 4);plot_ellipse(10, 15, 0, 8, 4);
-x = linspace(-20,30,NUM_POINTS_NN);
-y = linspace(-5,30,NUM_POINTS_NN);
-[X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
-        P = [X(i,j) Y(i,j)];
-        kNearestA = knearest(A, P, 5);
-        kNearestB = knearest(B, P, 5);
-        A_proto = mean(kNearestA);
-        B_proto = mean(kNearestB);
-        if norm(P - A_proto) < norm(P - B_proto)
-            Z(i,j) = 0;
-        else
-            Z(i,j) = 1;
-        end
-    end
-end
-
-contour(X,Y,Z,1,'r');
-
 %Calculating the confusion matrix
 
 ABKNNConfusion = zeros(2,2);
@@ -748,41 +768,6 @@ for i=1:length(BSample)
         ABKNNConfusion(2,2) = ABKNNConfusion(2,2) + 1;
     end
 end
-
-%5NN for C, D, and E
-newfig;
-
-scatter(C(:,1),C(:,2),'x');scatter(D(:,1),D(:,2), '+');scatter(E(:,1),E(:,2), '.');
-plot_ellipse(10, 5, atan2(-0.3827, -0.9239), 10, 20);plot_ellipse(15, 10, 0, 8, 8);plot_ellipse(5, 10, atan2(0.1222,-0.9925), 8, 40);
-x = linspace(-25,45, NUM_POINTS_NN);
-y = linspace(-80,80, NUM_POINTS_NN);
-
-[X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
-        P = [X(i,j) Y(i,j)];
-        kNearestC = knearest(C, P, 5);
-        kNearestD = knearest(D, P, 5);
-        kNearestE = knearest(E, P, 5);
-        C_proto = mean(kNearestC);
-        D_proto = mean(kNearestD);
-        E_proto = mean(kNearestE);
-        C_dist = norm(P - C_proto);
-        D_dist = norm(P - D_proto);
-        E_dist = norm(P - E_proto);
-        if C_dist < D_dist && C_dist < E_dist
-            Z(i,j) = 0;
-        elseif D_dist < E_dist
-            Z(i,j) = 1;
-        else
-            Z(i,j) = 2;
-        end
-    end
-end
-
-contour(X,Y,Z,1,'r');
-contour(X,Y,Z.*-1,1,'r');
 
 %Calculating Confusion Matrix
 
