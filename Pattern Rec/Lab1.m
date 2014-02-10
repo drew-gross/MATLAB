@@ -6,26 +6,31 @@ muA = [5 10];
 nA = 200;
 sigmaA = [8 0;0 4];
 A = repmat(muA, nA, 1) + randn(nA, 2)*sigmaA;
+ASample = repmat(muA, nA, 1) + randn(nA, 2)*sigmaA;
 
 muB = [10 15];
 nB = 200;
 sigmaB = [8 0;0 4];
 B = repmat(muB, nB, 1) + randn(nB, 2)*sigmaB;
+BSample = repmat(muB, nB, 1) + randn(nB, 2)*sigmaB;
 % part 2
 muC = [5 10];
 nC = 100;
 sigmaC = [8 4;4 40];
 C = repmat(muC, nC, 1) + randn(nC, 2)*sigmaC;
+CSample = repmat(muC, nC, 1) + randn(nC, 2)*sigmaC;
 
 muD = [15 10];
 nD = 200;
 sigmaD = [8 0;0 8];
 D = repmat(muD, nD, 1) + randn(nD, 2)*sigmaD;
+DSample = repmat(muD, nD, 1) + randn(nD, 2)*sigmaD;
 
 muE = [10 5];
 nE = 150;
 sigmaE = [10 -5; -5 20];
 E = repmat(muE, nE, 1) + randn(nE, 2)*sigmaE;
+ESample = repmat(muE, nE, 1) + randn(nE, 2)*sigmaE;
 
 fig = 0;
 newfig;
@@ -66,6 +71,28 @@ for i=1:length(x)
 end
 contour(X,Y,Z,1,'r');
 
+%Calculating the confusion matrix:
+ABMEDConfusion = zeros(2,2);
+
+for i=1:length(ASample)
+    A_dist = sqrt((ASample(i,1)-muA(1))^2 + (ASample(i,2)-muA(2))^2);
+    B_dist = sqrt((ASample(i,1)-muB(1))^2 + (ASample(i,2)-muB(2))^2);
+    if A_dist < B_dist
+        ABMEDConfusion(1,1) = ABMEDConfusion(1,1) + 1;
+    else
+        ABMEDConfusion(1,2) = ABMEDConfusion(1,2) + 1;
+    end
+end
+
+for i=1:length(BSample)
+    A_dist = sqrt((BSample(i,1)-muA(1))^2 + (BSample(i,2)-muA(2))^2);
+    B_dist = sqrt((BSample(i,1)-muB(1))^2 + (BSample(i,2)-muB(2))^2);
+    if A_dist < B_dist
+        ABMEDConfusion(2,1) = ABMEDConfusion(2,1) + 1;
+    else
+        ABMEDConfusion(2,2) = ABMEDConfusion(2,2) + 1;
+    end
+end
 
 % MED for C, D, and E
 newfig;
