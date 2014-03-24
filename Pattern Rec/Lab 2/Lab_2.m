@@ -1,4 +1,4 @@
-NUM_POINTS = 100;
+NUM_POINTS = 500;
 fig = 0;
 
 % load('lab2_1.mat')
@@ -65,10 +65,16 @@ load('lab2_3.mat');
 j = 1;
 Garray = {};
 
+newfig;
+xlabel('X');
+ylabel('Y');
+
+scatter(a(:,1),a(:,2),'x');scatter(b(:,1),b(:,2), '+');
+
 %While there are still points that need classification:
 while(~isempty([a;b]))
-    lena = length(a);
-    lenb = length(b);
+    lena = size(a,1);
+    lenb = size(b,1);
     
     %Get two test points
     testa = a(randi(lena),:);
@@ -76,7 +82,10 @@ while(~isempty([a;b]))
     
     %Using MED to create a discriminant:
     
-    slope = -(testb(2)-testa(2))/(testb(1)-testa(1));
+    slope = -(testb(1)-testa(1))/(testb(2)-testa(2));
+    if (testb(2) == testa(2))
+        continue
+    end
     midpoint = (testa + testb)/2;
     intercept = midpoint(2) - midpoint(1) * slope;
     
@@ -91,7 +100,7 @@ while(~isempty([a;b]))
         
     
     naB = 0;
-    for i=1:length(a)
+    for i=1:size(a,1)
         point = a(i,:);
         if (G(point(1),point(2)) < 0)
             naB = naB + 1;
@@ -99,7 +108,7 @@ while(~isempty([a;b]))
     end
     
     nbA = 0;
-    for i=1:length(b)
+    for i=1:size(b,1)
         point = b(i,:);
         if (G(point(1),point(2)) > 0)
             nbA = nbA + 1;
@@ -108,6 +117,10 @@ while(~isempty([a;b]))
     
     %In this condition, we have a good discriminant:
     if (naB == 0 || nbA == 0)
+        
+        x = linspace(0,500,NUM_POINTS);
+        y = x * slope + intercept;
+        
         %Save the discriminant
         Garray(length(Garray) + 1) = {{G, naB, nbA}};
         j = j + 1;
@@ -118,10 +131,13 @@ while(~isempty([a;b]))
         %all of the points in B that G *misclassifies*
         if (naB == 0)
             bnew = [];
-            for i=1:length(b)
+            for i=1:size(b,1)
                 point = b(i,:);
+                if (point == [0, 0])
+                    point = [0,0];
+                end
                 if (G(point(1),point(2)) >= 0)
-                    bnew(length(bnew)+1,:) = point;
+                    bnew(size(bnew,1)+1,:) = point;
                 end
             end
             b = bnew;
@@ -129,10 +145,10 @@ while(~isempty([a;b]))
          
         if (nbA == 0)
             anew = [];
-            for i=1:length(a)
+            for i=1:size(a,1)
                 point = a(i,:);
                 if (G(point(1),point(2)) <= 0)
-                    anew(length(anew)+1,:) = point;
+                    anew(size(anew,1)+1,:) = point;
                 end
             end
             a = anew;
@@ -146,22 +162,15 @@ load('lab2_3.mat');
 x = linspace(0,500,NUM_POINTS);
 y = linspace(0,500,NUM_POINTS);
 [X,Y] = meshgrid(x,y);
-Z = zeros(length(x));
-for i=1:length(x)
-    for j=1:length(y)
+Z = zeros(size(x,2));
+for i=1:size(x,2)
+    for j=1:size(y,2)
         P = [X(i,j);Y(i,j)];
         
         Z(i,j) = SeqClassify(Garray, P);
     end
 end
 
-newfig;
-xlabel('X');
-ylabel('Y');
-scatter(a(:,1),a(:,2),'x');scatter(b(:,1),b(:,2), '+');
 contour(X,Y,Z,1,'r');
-
-newfig;
-imshow(Z,[]);
 
 

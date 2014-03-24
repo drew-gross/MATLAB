@@ -21,7 +21,5 @@ function [ result ] = SeqClassify( Garray, point )
             end
         end
     end
-    
-    result = 2;
 end
 
