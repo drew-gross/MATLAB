@@ -46,3 +46,18 @@ for i=1:length(f32t)
 end
 
 confMatrixf32
+
+
+%Part 4:
+
+matSize = size(multf8);
+cimage = zeros(256,256);
+
+for i=1:matSize(1)
+    for j=1:matSize(2)
+        vec = [multf8(i,j,1);multf8(i,j,2)];
+        cimage(i,j) = MICDClassify(vec,muf8,sigf8);
+    end
+end
+
+imagesc(cimage)
